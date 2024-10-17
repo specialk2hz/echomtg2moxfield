@@ -2,19 +2,22 @@ import pandas as pd
 import requests
 import re
 from io import StringIO
+import os
+from dotenv import load_dotenv  # Import to load .env file
+
+# Load environment variables from .env file
+load_dotenv()
 
 # Define the API URL
 api_url = "https://api.echomtg.com/api/stores/export/"
 final_output_file = 'readyformox.csv'  # Final output file name
 
-# Read the authentication token from the local file
-def get_auth_token(file_path):
-    with open(file_path, 'r') as file:
-        return file.read().strip()  # Read the token and strip any extra whitespace
-
 def fetch_and_process_data():
-    auth_token_file = 'auth_token'  # Path to the authentication token file
-    auth_token = get_auth_token(auth_token_file)  # Fetch the token
+    # Fetch the token from environment variables
+    auth_token = os.getenv('AUTH_TOKEN')  # Get the token from the environment variable
+
+    if not auth_token:
+        raise Exception("Authentication token not found. Please set the AUTH_TOKEN environment variable.")
 
     # Make the API request
     response = requests.get(api_url, params={'auth': auth_token})
@@ -63,10 +66,11 @@ def fetch_and_process_data():
             card_renames = {
                 "Enlightened Tutor - 2000 Nicolas Labarre": "Enlightened Tutor",
                 "Scroll Rack - 1998 Brian Selden": "Scroll Rack"
-                # Add more renames as needed
+                # not sure of the decisions by echomtg, add more renames as needed
             }
             return card_renames.get(name, name)
 
+        # I really wish echomtg used scryfall edition codes
         def update_edition(original_name, edition):
             edition_changes = {
                 "Acidic Soil": "PLST",

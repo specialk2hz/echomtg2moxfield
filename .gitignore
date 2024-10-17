@@ -1,0 +1,20 @@
+# Ignore environment files
+.env
+auth_token
+
+# Ignore Docker tar files
+*.tar
+
+# Ignore log files
+*.log
+summary.txt
+
+# Ignore Python cache
+__pycache__/
+*.pyc
+
+# Ignore VENV
+env/
+
+# Ignore echo2mox output files
+*.csv
