@@ -1,0 +1,30 @@
+/* Full-height container to center the content */
+.full-height {
+    display: flex;
+    justify-content: center;  /* Horizontally centers the content */
+    align-items: center;      /* Vertically centers the content */
+    flex-direction: column;   /* Stack the text and button vertically */
+    height: 100vh;            /* Full viewport height */
+}
+
+/* Stylize the echo2mox "logo" area */
+.brand-text {
+    font-size: 4rem;          /* Large font size */
+    font-weight: bold;        /* Make the text bold */
+    letter-spacing: 2px;      /* Add spacing between the letters */
+    color: #FFFFFF;           /* Use a teal color (or adjust to your preference) */
+    text-transform: uppercase; /* Make the text uppercase */
+}
+
+body {
+    font-family: 'Roboto', sans-serif;
+    background-color: black; /* Make the whole background black */
+}
+
+.main-box {
+    border: 3px solid #e65100;  /* Darker orange border */
+    padding: 50px;
+    border-radius: 10px;        /* Rounded corners */
+    box-shadow: 0px 4px 8px rgba(0, 0, 0, 0.1); /* Light shadow for depth */
+    text-align: center;
+}

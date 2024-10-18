@@ -3,20 +3,30 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Fetch Card Data</title>
+    <title>Run Application</title>
     <!-- Materialize CSS -->
     <link href="https://cdnjs.cloudflare.com/ajax/libs/materialize/1.0.0/css/materialize.min.css" rel="stylesheet">
+    <!-- Material Icons -->
+    <link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
+    <!-- Link to External CSS -->
+    <link href="{{ url_for('static', filename='css/styles.css') }}" rel="stylesheet">
+    <!-- Link to Google Roboto Font -->
+    <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;500;700&display=swap" rel="stylesheet">
+
 </head>
 <body>
 
-    <div class="container">
-        <!-- Centered Form with Button to Run the Application -->
-        <div class="row">
-            <div class="col s12 center-align">
-                <form action="/run" method="post">
-                    <button type="submit" class="waves-effect waves-light btn-large">Fetch Card Data</button>
-                </form>
-            </div>
+    <div class="full-height">
+        <div class="main-box">
+            <!-- Stylized echo2mox text -->
+            <div class="brand-text">echo2mox</div>
+
+            <!-- Centered Form with Button to Run the Application -->
+            <form action="/run" method="post">
+                <button type="submit" class="waves-effect waves-light btn-large orange darken-4">
+                    <i class="material-icons left">file_download</i>Fetch Cards
+                </button>
+            </form>
         </div>
     </div>
 
