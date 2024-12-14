@@ -3,24 +3,54 @@ import requests
 import re
 from io import StringIO
 import os
-from dotenv import load_dotenv  # Import to load .env file
+from dotenv import load_dotenv
 
 # Load environment variables from .env file
 load_dotenv()
 
-# Define the API URL
-api_url = "https://api.echomtg.com/api/stores/export/"
-final_output_file = 'readyformox.csv'  # Final output file name
+# Define the API URLs
+AUTH_URL = "https://api.echomtg.com/api/user/auth/"
+EXPORT_URL = "https://api.echomtg.com/api/stores/export/"
+final_output_file = 'readyformox.csv'
+
+def get_auth_token():
+    """
+    Authenticate with EchoMTG API and return the access token
+    """
+    email = os.getenv('ECHO_EMAIL')
+    password = os.getenv('ECHO_PASSWORD')
+
+    if not email or not password:
+        raise Exception("Email or password not found. Please set ECHO_EMAIL and ECHO_PASSWORD in your .env file.")
+
+    # Prepare the authentication request
+    auth_data = {
+        "email": email,
+        "password": password,
+        "type": "curl"  # To receive plain text token
+    }
+
+    response = requests.post(AUTH_URL, json=auth_data)
+
+    if response.status_code == 200:
+        # The response should be a plain text token
+        return response.text.strip()
+    else:
+        raise Exception(f"Authentication failed: {response.status_code} - {response.text}")
 
 def fetch_and_process_data():
-    # Fetch the token from environment variables
-    auth_token = os.getenv('AUTH_TOKEN')  # Get the token from the environment variable
+    # First, get the authentication token
+    try:
+        auth_token = get_auth_token()
+    except Exception as e:
+        raise Exception(f"Failed to authenticate: {str(e)}")
 
-    if not auth_token:
-        raise Exception("Authentication token not found. Please set the AUTH_TOKEN environment variable.")
-
-    # Make the API request
-    response = requests.get(api_url, params={'auth': auth_token})
+    # Make the API request with the new token
+    headers = {
+        "Authorization": f"Bearer {auth_token}"
+    }
+    
+    response = requests.get(EXPORT_URL, headers=headers)
 
     # Check if the request was successful
     if response.status_code == 200:
@@ -66,11 +96,9 @@ def fetch_and_process_data():
             card_renames = {
                 "Enlightened Tutor - 2000 Nicolas Labarre": "Enlightened Tutor",
                 "Scroll Rack - 1998 Brian Selden": "Scroll Rack"
-                # not sure of the decisions by echomtg, add more renames as needed
             }
             return card_renames.get(name, name)
 
-        # I really wish echomtg used scryfall edition codes
         def update_edition(original_name, edition):
             edition_changes = {
                 "Acidic Soil": "PLST",
@@ -97,13 +125,15 @@ def fetch_and_process_data():
                 "Solemnity": "PHOU",
                 "Temur Battle Rage": "PLST",
                 "Thrill of Possibility": "PLST",
-                "Xiahou Dun, the One-Eyed": "J12",
-                "Voja, Jaws of the Conclave": "MKM"
+                "Xiahou Dun, the One-Eyed": "J12"git,
+                "Voja, Jaws of the Conclave": "MKM",
+                "Alena, Kessig Trapper": "PLST",
+                ""
             }
             return edition_changes.get(original_name, edition)
 
-        changes = 0  # Count the number of changes made
-        changed_rows = []  # List to track changes
+        changes = 0
+        changed_rows = []
 
         # Process the DataFrame
         for index, row in df.iterrows():
@@ -132,11 +162,18 @@ def fetch_and_process_data():
         df.to_csv(final_output_file, index=False)
 
         # Log summary of changes
-        log_file = 'summary.txt'  # Log file name
+        log_file = 'summary.txt'
         with open(log_file, 'w') as logfile:
             logfile.write(f'Total changes: {changes}\n\n')
             logfile.write('\n'.join(changed_rows))
 
-        return final_output_file  # Return the path of the saved file
+        return final_output_file
     else:
-        raise Exception(f"Failed to fetch data: {response.status_code}")
+        raise Exception(f"Failed to fetch data: {response.status_code} - {response.text}")
+
+if __name__ == "__main__":
+    try:
+        output_file = fetch_and_process_data()
+        print(f"Successfully processed data and saved to {output_file}")
+    except Exception as e:
+        print(f"Error: {str(e)}")
