@@ -100,6 +100,8 @@ def fetch_and_process_data():
             return card_renames.get(name, name)
 
         def update_edition(original_name, edition):
+            # Apply specific card edition changes
+            # Note: Global PLIST->PLST conversion is handled separately
             edition_changes = {
                 "Acidic Soil": "PLST",
                 "Aethersphere Harvester": "PAER",
@@ -125,10 +127,8 @@ def fetch_and_process_data():
                 "Solemnity": "PHOU",
                 "Temur Battle Rage": "PLST",
                 "Thrill of Possibility": "PLST",
-                "Xiahou Dun, the One-Eyed": "J12"git,
-                "Voja, Jaws of the Conclave": "MKM",
-                "Alena, Kessig Trapper": "PLST",
-                ""
+                "Xiahou Dun, the One-Eyed": "J12",
+                "Voja, Jaws of the Conclave": "MKM"
             }
             return edition_changes.get(original_name, edition)
 
@@ -145,9 +145,14 @@ def fetch_and_process_data():
 
             # Rename specific cards
             new_name = rename_cards(cleaned_name)
+            
+            # First handle global PLIST to PLST conversion
+            new_edition = original_edition
+            if original_edition == "PLIST":
+                new_edition = "PLST"
 
-            # Update the edition using the new name
-            new_edition = update_edition(new_name, original_edition)
+            # Then apply any specific card edition changes
+            new_edition = update_edition(new_name, new_edition)
 
             # Check if there were changes
             if original_name != new_name or original_edition != new_edition:
